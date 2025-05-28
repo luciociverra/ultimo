@@ -1,0 +1,40 @@
+
+---3 poi uno
+<div class="row my-5">
+        <div class="col-md-4 text-center">
+        </div>
+        <div class="col-md-4 text-center">
+        </div>
+        <div class="col-md-4 text-center">
+        </div>
+-- centrato
+ 
+ <div class="mx-auto border bg-dark text-white text-center" style="width: 200px;">
+    Elemento centrato
+  </div>
+      
+      
+--PADDING MARGIN
+t - for classes that set margin-top or padding-top
+b - for classes that set margin-bottom or padding-bottom
+l - for classes that set margin-left or padding-left
+r - for classes that set margin-right or padding-right
+   -- raggruppati --
+x - for classes that set both *-left and *-right
+y - for classes that set both *-top and *-bottom
+  
+  
+max-width 320px	Smartwatches
+max-width 420px	Smaller devices
+max-width 600px	Phones
+min-width 600px	Tablets and Large Phones
+min-width 768px	Tablets
+min-width 992px	Laptops and Desktops
+min-width 1200px	Monitors, Desktops
+
+
+ ELEMENTI INTERNI AFFIANCATI class= d-flex justify-content-center align-items-center 
+ CENTRO TUTTO:                      mx-auto 
+ ------------ALIGN
+ w-100 -> width 100%
+  <div class="card-body text-center"> text-right text-left

@@ -1,0 +1,457 @@
+<%@ include file="../base.jsp" %>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor Immagini</title>
+  <style>
+    .img-container {
+      margin-bottom: 1rem;
+      max-height: 500px;
+    }
+    
+    .img-container img {
+      display: block;
+      max-width: 100%;
+    }
+    
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 0;
+    }
+    
+    .btn-group {
+      margin-bottom: 1rem;
+    }
+    
+    .preview {
+      overflow: hidden;
+      width: 100%;
+      height: 150px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      background-color: #f8f8f8;
+    }
+    
+    .dropzone {
+      padding: 30px;
+      border: 2px dashed #007bff;
+      border-radius: 5px;
+      background: #f8f8ff;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    
+    .dropzone:hover {
+      background: #eaeaff;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <!-- Alert per messaggi di sistema -->
+    <div id="alertMessage" class="alert d-none fade show" role="alert">
+      <span id="alertText"></span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <!-- Area caricamento immagine -->
+        <div id="dropzone" class="dropzone mb-3">
+          <p>Trascina qui l'immagine o clicca per selezionare</p>
+          <input type="file" id="inputImage" class="hidden" accept="image/*">
+        </div>
+        
+        <!-- Area principale con l'immagine -->
+        <div class="img-container hidden">
+          <img id="image" src="" alt="Immagine da editare">
+        </div>
+        
+        <!-- Controlli -->
+        <div class="controls hidden">
+          <div class="row mb-3">
+            <div class="col-md-9">
+              <div class="btn-group mr-2">
+                <button type="button" class="btn btn-primary" id="btnRotateLeft" title="Ruota a sinistra">
+                  <span>↺ Ruota a sinistra</span>
+                </button>
+                <button type="button" class="btn btn-primary" id="btnRotateRight" title="Ruota a destra">
+                  <span>↻ Ruota a destra</span>
+                </button>
+              </div>
+              
+              <div class="btn-group mr-2">
+                <button type="button" class="btn btn-outline-primary" id="btnCrop" title="Ritaglia">
+                  <span>✂️ Ritaglia</span>
+                </button>
+                <button type="button" class="btn btn-outline-primary" id="btnReset" title="Reset">
+                  <span>🔄 Reset</span>
+                </button>
+              </div>
+              
+              <div class="btn-group">
+                <button type="button" class="btn btn-success mr-2" id="btnDownload" title="Scarica">
+                  <span>💾 Scarica</span>
+                </button>
+                <button type="button" class="btn btn-info" id="btnUpload" title="Carica su Server">
+                  <span>☁️ Salva su Database</span>
+                </button>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <select class="form-control" id="aspectRatio">
+                <option value="NaN">Libero</option>
+                <option value="1">1:1</option>
+                <option value="1.333">4:3</option>
+                <option value="1.5">3:2</option>
+                <option value="1.777">16:9</option>
+                <option value="0.667">2:3</option>
+                <option value="0.75">3:4</option>
+              </select>
+            </div>
+          </div>
+          
+ 
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal per i metadati -->
+  <div class="modal fade" id="metadataModal" tabindex="-1" role="dialog" aria-labelledby="metadataModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="metadataModalLabel">Informazioni immagine</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="metadataForm">
+            <div class="form-group">
+              <label for="inputTitolo">Titolo</label>
+              <input type="text" class="form-control" id="inputTitolo" placeholder="Inserisci un titolo">
+            </div>
+            <div class="form-group">
+              <label for="inputDescrizione">Descrizione</label>
+              <textarea class="form-control" id="inputDescrizione" rows="3" placeholder="Inserisci una descrizione"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="inputData">Data</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="inputData" placeholder="Seleziona una data">
+                <div class="input-group-append">
+                  <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                </div>
+              </div>
+              <small class="form-text text-muted">Puoi inserire la data completa (gg/mm/aaaa) o solo l'anno (aaaa)</small>
+            </div>
+            <div class="form-group">
+              <label>Formato data</label>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="formatoCompleto" name="formatoData" class="custom-control-input" value="completo" checked>
+                <label class="custom-control-label" for="formatoCompleto">Data completa (gg/mm/aaaa)</label>
+              </div>
+              <div class="custom-control custom-radio">
+                <input type="radio" id="formatoAnno" name="formatoData" class="custom-control-input" value="anno">
+                <label class="custom-control-label" for="formatoAnno">Solo anno (aaaa)</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputLuogo">Luogo</label>
+              <input type="text" class="form-control" id="inputLuogo" placeholder="Inserisci un luogo">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+          <button type="button" class="btn btn-primary" id="btnSaveMetadata">Salva nel database</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+   
+  <script>
+    // Funzione per mostrare messaggi
+    function showMessage(type, message) {
+      var alertBox = document.getElementById('alertMessage');
+      var alertText = document.getElementById('alertText');
+      
+      // Imposta il tipo di alert (success, danger, warning, info)
+      alertBox.className = 'alert alert-' + type + ' alert-dismissible fade show';
+      
+      // Imposta il messaggio
+      alertText.textContent = message;
+      
+      // Mostra l'alert
+      alertBox.classList.remove('d-none');
+      
+      // Imposta timer per nascondere l'alert dopo 5 secondi
+      setTimeout(function() {
+        alertBox.classList.add('d-none');
+      }, 5000);
+    }
+    
+    window.addEventListener('DOMContentLoaded', function () {
+      var image = document.getElementById('image');
+      var inputImage = document.getElementById('inputImage');
+      var dropzone = document.getElementById('dropzone');
+      var imgContainer = document.querySelector('.img-container');
+      var controls = document.querySelector('.controls');
+      var cropper;
+      
+      // Gestione click sul dropzone
+      dropzone.addEventListener('click', function () {
+        inputImage.click();
+      });
+      
+      // Gestione drag and drop
+      dropzone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropzone.classList.add('bg-light');
+      });
+      
+      dropzone.addEventListener('dragleave', function () {
+        dropzone.classList.remove('bg-light');
+      });
+      
+      dropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('bg-light');
+        
+        if (e.dataTransfer.files && e.dataTransfer.files.length) {
+          inputImage.files = e.dataTransfer.files;
+          handleFileSelect();
+        }
+      });
+      
+      // Gestione selezione file
+      inputImage.addEventListener('change', handleFileSelect);
+      
+      function handleFileSelect() {
+        var files = inputImage.files;
+        
+        if (files && files.length) {
+          var file = files[0];
+          
+          if (/^image\/\w+/.test(file.type)) {
+            var reader = new FileReader();
+            
+            reader.onload = function () {
+              dropzone.classList.add('hidden');
+              imgContainer.classList.remove('hidden');
+              controls.classList.remove('hidden');
+              
+              image.src = reader.result;
+              
+              if (cropper) {
+                cropper.destroy();
+              }
+              
+              // Inizializzazione Cropper
+              cropper = new Cropper(image, {
+                aspectRatio: NaN,
+                preview: '.preview',
+                viewMode: 1, // Restringe la vista al bordo della canvas
+                responsive: true,
+                restore: false,
+                checkCrossOrigin: false
+              });
+            };
+            
+            reader.readAsDataURL(file);
+          } else {
+            alert('Per favore seleziona un\'immagine valida');
+          }
+        }
+      }
+      
+      // Gestione bottoni
+      document.getElementById('btnRotateLeft').addEventListener('click', function () {
+        if (cropper) cropper.rotate(-90);
+      });
+      
+      document.getElementById('btnRotateRight').addEventListener('click', function () {
+        if (cropper) cropper.rotate(90);
+      });
+      
+      document.getElementById('btnCrop').addEventListener('click', function () {
+        if (cropper) {
+          var canvas = cropper.getCroppedCanvas({
+            maxWidth: 4096,
+            maxHeight: 4096
+          });
+          
+          if (canvas) {
+            image.src = canvas.toDataURL('image/jpeg');
+            cropper.destroy();
+            cropper = new Cropper(image, {
+              aspectRatio: NaN,
+              preview: '.preview',
+              viewMode: 1,
+              responsive: true,
+              restore: false
+            });
+          }
+        }
+      });
+      
+      document.getElementById('btnReset').addEventListener('click', function () {
+        if (cropper) {
+          cropper.reset();
+        }
+      });
+      
+      document.getElementById('btnDownload').addEventListener('click', function () {
+        if (cropper) {
+          var canvas = cropper.getCroppedCanvas({
+            maxWidth: 4096,
+            maxHeight: 4096
+          });
+          
+          if (canvas) {
+            var link = document.createElement('a');
+            link.download = 'immagine_modificata.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.8);
+            link.click();
+          }
+        }
+      });
+      
+      // Gestione upload al server/database
+      document.getElementById('btnUpload').addEventListener('click', function () {
+        if (cropper) {
+          // Mostra il modal per inserire i metadati
+          $('#metadataModal').modal('show');
+        }
+      });
+      
+      // Inizializza il datepicker
+      $('#inputData').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'it',
+        autoclose: true,
+        todayHighlight: true,
+        clearBtn: true
+      });
+      
+      // Gestione cambio formato data
+      $('input[name="formatoData"]').change(function() {
+        var formato = $(this).val();
+        var inputData = $('#inputData');
+        
+        if (formato === 'anno') {
+          // Cambia il formato del datepicker a solo anno
+          inputData.datepicker('destroy');
+          inputData.datepicker({
+            format: 'yyyy',
+            viewMode: 'years', 
+            minViewMode: 'years',
+            language: 'it',
+            autoclose: true
+          });
+          inputData.attr('placeholder', 'Inserisci solo l\'anno');
+        } else {
+          // Ripristina il formato completo
+          inputData.datepicker('destroy');
+          inputData.datepicker({
+            format: 'dd/mm/yyyy',
+            language: 'it',
+            autoclose: true,
+            todayHighlight: true,
+            clearBtn: true
+          });
+          inputData.attr('placeholder', 'Seleziona una data');
+        }
+      });
+      
+      // Gestione salvataggio con metadati
+      document.getElementById('btnSaveMetadata').addEventListener('click', function () {
+        var titolo = document.getElementById('inputTitolo').value || 'Senza titolo';
+        var descrizione = document.getElementById('inputDescrizione').value || '';
+        var data = document.getElementById('inputData').value || '';
+        var formatoData = document.querySelector('input[name="formatoData"]:checked').value;
+        var luogo = document.getElementById('inputLuogo').value || '';
+        
+        if (cropper) {
+          var canvas = cropper.getCroppedCanvas({
+            maxWidth: 4096,
+            maxHeight: 4096
+          });
+          
+          if (canvas) {
+            // Aggiunge spinner per indicare caricamento in corso
+            var btnSave = document.getElementById('btnSaveMetadata');
+            var originalText = btnSave.innerHTML;
+            btnSave.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Caricamento...';
+            btnSave.disabled = true;
+            
+            // Ottiene l'immagine come Blob
+            canvas.toBlob(function(blob) {
+              // Crea FormData per l'upload
+              var formData = new FormData();
+              formData.append('immagine', blob, 'immagine_modificata.jpg');
+              
+              // Aggiunge metadati 
+              formData.append('titolo', titolo);
+              formData.append('descrizione', descrizione);
+              formData.append('data', data);
+              formData.append('formatoData', formatoData);
+              formData.append('luogo', luogo);
+              
+              // Esegue la richiesta AJAX alla servlet
+              $.ajax({
+                url: '/servlet/UploadImmagineServlet', // Modifica con l'URL corretto della tua servlet
+                type: 'POST',
+                data: formData,
+                processData: false,  // Importante per FormData
+                contentType: false,  // Importante per FormData
+                success: function(response) {
+                  // Chiude il modal
+                  $('#metadataModal').modal('hide');
+                  
+                  // Ripristina il bottone
+                  btnSave.innerHTML = originalText;
+                  btnSave.disabled = false;
+                  
+                  // Mostra messaggio di successo
+                  showMessage('success', 'Immagine salvata con successo nel database!');
+                },
+                error: function(xhr, status, error) {
+                  // Ripristina il bottone
+                  btnSave.innerHTML = originalText;
+                  btnSave.disabled = false;
+                  
+                  // Mostra messaggio di errore
+                  showMessage('danger', 'Errore durante il salvataggio: ' + (xhr.responseText || error));
+                }
+              });
+            }, 'image/jpeg', 0.8); // Formato JPEG con 80% di qualità
+          }
+        }
+      });
+      
+      // Gestione cambio aspect ratio
+      document.getElementById('aspectRatio').addEventListener('change', function () {
+        if (cropper) {
+          cropper.setAspectRatio(parseFloat(this.value));
+        }
+      });
+    });
+  </script>
+</body>
+</html>

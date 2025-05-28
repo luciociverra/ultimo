@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context displayName="Sui Passi" docBase="ultimo" path="/ultimo"> 
+ 
+<Environment name="appFolder" type="java.lang.String"  value="C:/Loison/mc_folder/"/>
+<Environment name="appFolderLinux" type="java.lang.String"  value="/home/lavweb/mc_folder/"/>
+<Environment name="node_status_url" type="java.lang.String"  value="http://localhost:3010/status"/>
+
+<Resource name="jdbc/SP_DB"
+      auth="Container"
+      type="javax.sql.DataSource"
+      driverClassName="org.postgresql.Driver"
+      url="jdbc:postgresql://127.0.0.1:5432/spbox"
+      username="postgres"
+      password="2-postgres-3"
+      maxActive="20"
+      initialSize="3"
+      minIdle="0"
+      maxIdle="8"
+      maxWait="10000"
+      timeBetweenEvictionRunsMillis="10000"
+      minEvictableIdleTimeMillis="60000"
+      testWhileIdle="true"
+      poolPreparedStatements="true"
+      maxOpenPreparedStatements="100"
+      validationQuery="SELECT 1"
+      rollbackOnReturn="true"
+      />    
+</Context>
+
+
+
+   

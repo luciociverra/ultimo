@@ -1,0 +1,19 @@
+<project name="MyWebApp" default="war">
+
+    <property name="web.dir" value="WebContent"/>
+    <property name="build.dir" value="${web.dir}/WEB-INF"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="war.filename" value="sp.war"/>
+
+    <target name="clean">
+        <delete dir="${dist.dir}" />
+        <mkdir dir="${dist.dir}" />
+    </target>
+
+    <target name="war" depends="clean">
+        <jar destfile="${dist.dir}/${war.filename}">
+            <fileset dir="${web.dir}" />
+        </jar>
+    </target>
+
+</project>
