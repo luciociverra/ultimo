@@ -2,7 +2,7 @@
         <div class="col-6 col-sm-12 d-flex">
             <label class="form-label"><%=spdata_label%></label>
         </div>
-        <div class="col-6 d-flex">
+        <div class="col-6 col-sm-12 d-flex">
               <div class="btn-group w-100" role="group">
                     <input type="radio" class="btn-check" name="dataType" id="<%=sp_suffix%>TypeD" value="D" autocomplete="off">
                     <label class="btn btn-outline-primary" for="<%=sp_suffix%>TypeD">

@@ -115,6 +115,8 @@ width: 100vw;
   <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab"><%@ include file="./editor/nascita.jsp" %></div>
   <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab"><%@ include file="./editor/morte.jsp" %></div>
   <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3-tab"><%@ include file="./editor/legami.jsp" %></div>
+  <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4-tab"><%@ include file="./editor/storie.jsp" %></div>
+  
   </div>
 
  </div><!--  fine crd body -->

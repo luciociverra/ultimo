@@ -60,28 +60,25 @@
 	    
 	    
 			<div class="form-group col-sm-12 col-md-12 flex-column d-flex">
-	        <label class="form-control-label pb-3">Tipo legame</label>
-	        
-            <div class="row mt-4 hide" id="areaLegami">
-                            <div class="col-md-6 mb-4">
-                                <div class="card parent-card" id="father-card" data-parent="FP">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Padre</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="card parent-card" id="mother-card" data-parent="FM">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Madre</h5>
-                                    </div>
-                                </div>
-                            </div>
+	      	  <div class="row mt-4 hide" id="areaLegami">
+               <label class="form-control-label pb-3">Tipo legame</label>
+	           <div class="col-md-6 mb-4">
+	               <div class="card parent-card" id="father-card" data-parent="FP">
+	                   <div class="card-body text-center">
+	                       <h5 class="card-title">Padre</h5>
+	                   </div>
+	               </div>
+	           </div>
+	           <div class="col-md-6 mb-4">
+	               <div class="card parent-card" id="mother-card" data-parent="FM">
+	                   <div class="card-body text-center">
+	                       <h5 class="card-title">Madre</h5>
+	                   </div>
+	               </div>
+	           </div>
              </div>      
-             
-			</div>
-			 
-			 </div>
+           </div>
+		 </div>
 	</div> <!-- area lx -->
 		
 	<div class="col-md-6 col-sm-12 pt-4">
@@ -150,9 +147,10 @@
 		  var legamiList = $("#legami_List");
 		  legamiList.empty();
 		  res.forEach(elem => {
-               var r="<li class='list-group-item d-flex'>"+
-	            "<a href='#' onClick='deleLegame("+elem.id+");return false;' class='mr-4'><i class='fa fa-trash'></i></a>"+
-	            elem.p_name+" "+elem.p_surname+ "  " +elem.tipoLegame +"</li>";
+               var r="<li class='list-group-item d-flex  align-items-center'>"+
+	            "<a href='#' onClick='deleLegame("+elem.id+");return false;' class='me-2' style='color:purple'>"+
+	            "<i class='fa fa-trash'></i></a><span>"+
+	            elem.p_name+" "+elem.p_surname+ "&nbsp;&nbsp;&nbsp;" +elem.tipoLegame +"</span></li>";
 	            legamiList.append(r);
 		  });
 	}
